@@ -166,22 +166,42 @@ Your jaanu 🤍`;
       initFlowers();
     };
 
+          // Floating flower images (Reliable Unsplash links)
+    const flowerImages = [
+      'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=100&q=80', // Rose
+      'https://images.unsplash.com/photo-1559563362-c667bb5f5480?w=100&q=80', // Tulip
+      'https://images.unsplash.com/photo-1596073413908-4482 contact-0?w=100&q=80', // White Flower
+      'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=100&q=80'  // Pink Bloom
+    ];
+
+    const flowersDiv = document.getElementById('flowers');
+    
     function initFlowers() {
-      const flowerImages = [
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Rose_Red_Flower.jpg/120px-Rose_Red_Flower.jpg',
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/White_rose.jpg/120px-White_rose.jpg',
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tulip_-_floriade_canberra.jpg/120px-Tulip_-_floriade_canberra.jpg'
-      ];
-      const flowersDiv = document.getElementById('flowers');
-      for (let i = 0; i < 15; i++) {
+      for (let i = 0; i < 20; i++) {
+        const container = document.createElement('div');
+        container.style.position = 'absolute';
+        container.style.left = Math.random() * 100 + 'vw';
+        container.style.animation = `float ${6 + Math.random() * 6}s linear infinite`;
+        container.style.animationDelay = Math.random() * 5 + 's';
+        
+        // Create the image
         const img = document.createElement('img');
         img.src = flowerImages[Math.floor(Math.random() * flowerImages.length)];
-        img.style.left = Math.random() * 100 + 'vw';
-        img.style.animationDuration = (6 + Math.random() * 6) + 's';
-        img.style.delay = Math.random() * 5 + 's';
-        flowersDiv.appendChild(img);
+        img.style.width = '40px';
+        img.style.borderRadius = '50%'; // Makes them look like petals
+        
+        // Fallback to emoji if image fails
+        img.onerror = function() {
+          this.style.display = 'none';
+          container.innerText = '🌸';
+          container.style.fontSize = '24px';
+        };
+
+        container.appendChild(img);
+        flowersDiv.appendChild(container);
       }
     }
+      
 
     function moveNoButton() {
       const padding = 20;
