@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nasrin, Be My Valentine</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffd1dc, #ffe6e6);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    /* Start Screen Overlay */
+    #overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #ffd1dc;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .container {
+      background: rgba(255,255,255,0.94);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      width: 92%;
+      max-width: 420px;
+      position: relative;
+      z-index: 2;
+      min-height: 300px;
+    }
+
+    h1 { color: #d81b60; margin-bottom: 10px; }
+    h2 { color: #ad1457; font-size: 1.2rem; }
+
+    .btn-group {
+      margin-top: 30px;
+      height: 100px; /* Space for moving button */
+      position: relative;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      transition: transform 0.2s ease;
+    }
+
+    #yesBtn { background: #43a047; color: white; position: relative; z-index: 5; }
+    #noBtn {
+      background: #e53935;
+      color: white;
+      position: absolute;
+      white-space: nowrap;
+    }
+
+    #flowerEmoji { font-size: 60px; margin: 20px 0; }
+
+    #note {
+      display: none;
+      margin-top: 20px;
+      font-size: 1.1rem;
+      color: #d81b60;
+      font-weight: 500;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .floating-flowers img {
+      position: absolute;
+      width: 40px;
+      animation: float 12s linear infinite;
+      opacity: 0.6;
+      z-index: 1;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(110vh) rotate(0deg); }
+      100% { transform: translateY(-20vh) rotate(360deg); }
+    }
+
+    .heart-pop {
+      position: fixed;
+      font-size: 24px;
+      animation: rise 3s ease-out forwards;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    @keyframes rise {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--x), var(--y)) scale(1.5); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="overlay">
+    <h1>You have a message from Jaanu ❤️</h1>
+    <p>Click to open</p>
+  </div>
+
+  <div class="floating-flowers" id="flowers"></div>
+
+  <div class="container">
+    <div id="mainContent">
+      <h1>Nasrin ❤️</h1>
+      <div id="flowerEmoji">🌹🌷🌼</div>
+      
+      <div id="questionSection">
+        <h2>Will you be my Valentine?</h2>
+        <div class="btn-group">
+          <button id="yesBtn">Yes 💖</button>
+          <button id="noBtn">No 🙈</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="note"></div>
+  </div>
+
+  <audio id="bgMusic" loop>
+    <source src="hona-tha-pyaar.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const overlay = document.getElementById('overlay');
+    const questionSection = document.getElementById('questionSection');
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const note = document.getElementById('note');
+    const bgMusic = document.getElementById('bgMusic');
+    const mainContent = document.getElementById('mainContent');
+
+    const finalNote = `My dear Nasrin,
+
+Nothing in the world is as beautiful as you and I don't want anything else from this world right now more than you.
+
+I love you. Forever.
+
+Your jaanu 🤍`;
+
+    let yesScale = 1;
+
+    // Start Experience
+    overlay.onclick = () => {
+      overlay.style.display = 'none';
+      bgMusic.play().catch(e => console.log("Audio play blocked"));
+      initFlowers();
+    };
+
+    function initFlowers() {
+      const flowerImages = [
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Rose_Red_Flower.jpg/120px-Rose_Red_Flower.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/White_rose.jpg/120px-White_rose.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tulip_-_floriade_canberra.jpg/120px-Tulip_-_floriade_canberra.jpg'
+      ];
+      const flowersDiv = document.getElementById('flowers');
+      for (let i = 0; i < 15; i++) {
+        const img = document.createElement('img');
+        img.src = flowerImages[Math.floor(Math.random() * flowerImages.length)];
+        img.style.left = Math.random() * 100 + 'vw';
+        img.style.animationDuration = (6 + Math.random() * 6) + 's';
+        img.style.delay = Math.random() * 5 + 's';
+        flowersDiv.appendChild(img);
+      }
+    }
+
+    function moveNoButton() {
+      const padding = 20;
+      const container = document.querySelector('.container').getBoundingClientRect();
+      // Ensure button stays within the card bounds
+      const maxX = container.width - noBtn.offsetWidth - padding;
+      const maxY = container.height - noBtn.offsetHeight - padding;
+      
+      const randomX = Math.max(padding, Math.random() * maxX);
+      const randomY = Math.max(padding, Math.random() * maxY);
+
+      noBtn.style.left = randomX + 'px';
+      noBtn.style.top = randomY + 'px';
+    }
+
+    noBtn.addEventListener('mouseover', () => {
+      moveNoButton();
+      yesScale += 0.1;
+      yesBtn.style.transform = `scale(${yesScale})`;
+    });
+
+    function createHearts() {
+      for (let i = 0; i < 30; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart-pop';
+        heart.innerText = ['❤️', '💖', '💝', '💕'][Math.floor(Math.random() * 4)];
+        heart.style.left = '50vw';
+        heart.style.top = '50vh';
+        heart.style.setProperty('--x', (Math.random() - 0.5) * 600 + 'px');
+        heart.style.setProperty('--y', (Math.random() - 0.5) * 600 + 'px');
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 3000);
+      }
+    }
+
+    function typeWriter(text, i = 0) {
+      if (i < text.length) {
+        note.innerHTML += text.charAt(i);
+        setTimeout(() => typeWriter(text, i + 1), 50);
+      }
+    }
+
+    yesBtn.onclick = () => {
+      mainContent.style.display = 'none';
+      note.style.display = 'block';
+      createHearts();
+      typeWriter(finalNote);
+    };
+  </script>
+</body>
+</html>
